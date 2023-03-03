@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  crdb:
+    image: cockroachdb/cockroach:latest
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    command: start-single-node --accept-sql-without-tls
+    environment:
+      COCKROACH_DATABASE: "aula"
+      COCKROACH_USER: "aula"
+      COCKROACH_PASSWORD: "aula@321"
+  flyway:
+    image: flyway/flyway
+    command: -configFiles=/flyway/conf/flyway.config -locations=filesystem:/flyway/sql -connectRetries=60 migrate
+    volumes:
+      - ./scripts/flyway/sql:/flyway/sql
+      - ./scripts/flyway/conf/flyway.config:/flyway/conf/flyway.config
+    depends_on:
+      - crdb
