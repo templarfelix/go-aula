@@ -10,6 +10,8 @@ Projeto em Go para demonstrar um microservice
 ## openapi
     https://editor.swagger.io
     demo: https://raw.githubusercontent.com/swagger-api/swagger-petstore/master/src/main/resources/openapi.yaml
+## mocks
+    https://vektra.github.io/mockery/configuration/
 ## docker ( docker desktop )
 
 # apis
@@ -21,4 +23,13 @@ echo
 ##
 
 endpoints
+
+### commands
+
+
+### gerar mocks
+
+go generate ./...
+
+### compilar
 

@@ -6,8 +6,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
+	"log"
 	customContext "microservice/cmd/infra/context"
 	"microservice/cmd/infra/env"
+	"microservice/domain/repository"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,10 +17,26 @@ import (
 )
 
 func main() {
+
+	defaultContext := context.Background()
+
 	e := echo.New()
 
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
+
+	// database
+	database, err := repository.Connect(env.Config.Database.Host, env.Config.Database.Port, env.Config.Database.User, env.Config.Database.Name, env.Config.Database.Password)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// migrate database?? fixme need?
+	repository.Migrate(database)
+
+	tagRepo := repository.NewTagRepository(database)
+
+	tagRepo.Fetch(defaultContext, "", 1)
 
 	e.Use(middleware.RequestID())
 	p := prometheus.NewPrometheus("echo", nil)

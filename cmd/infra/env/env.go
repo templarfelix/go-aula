@@ -9,6 +9,14 @@ type config struct {
 		Address string
 		Timeout int64
 	}
+
+	Database struct {
+		Host     string
+		Port     string
+		User     string
+		Name     string
+		Password string
+	}
 }
 
 var Config config

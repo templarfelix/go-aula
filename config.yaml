@@ -1,7 +1,7 @@
 {
   "debug": true,
   "server": {
-    "address": ":8080",
+    "address": ":9090",
     "timeout": "30",
   },
   "context":{
@@ -9,10 +9,10 @@
   },
   "database": {
     "host": "localhost",
-    "port": "3306",
-    "user": "user",
-    "pass": "password",
-    "name": "article"
+    "port": "26257",
+    "user": "aula",
+    "password": "aula@321",
+    "name": "aula"
   }
 
 }
