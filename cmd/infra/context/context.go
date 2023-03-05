@@ -2,14 +2,14 @@ package context
 
 import "github.com/labstack/echo/v4"
 
-type CustomContext struct {
+type EchoContext struct {
 	echo.Context
 }
 
-func (c *CustomContext) Foo() {
+func (c *EchoContext) Foo() {
 	println("foo")
 }
 
-func (c *CustomContext) Bar() {
+func (c *EchoContext) Bar() {
 	println("bar")
 }

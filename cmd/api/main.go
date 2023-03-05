@@ -6,10 +6,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
-	"log"
-	customContext "microservice/cmd/infra/context"
+	echoContext "microservice/cmd/infra/context"
 	"microservice/cmd/infra/env"
+	"microservice/domain/handler"
 	"microservice/domain/repository"
+	"microservice/domain/service"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,25 +19,26 @@ import (
 
 func main() {
 
-	defaultContext := context.Background()
-
 	e := echo.New()
 
 	logger, _ := zap.NewProduction()
+	zap.ReplaceGlobals(logger)
 	defer logger.Sync()
 
 	// database
 	database, err := repository.Connect(env.Config.Database.Host, env.Config.Database.Port, env.Config.Database.User, env.Config.Database.Name, env.Config.Database.Password)
 	if err != nil {
-		log.Fatal(err)
+		zap.L().Fatal(err.Error(), zap.Error(err))
 	}
 
 	// migrate database?? fixme need?
 	repository.Migrate(database)
 
+	// repository
 	tagRepo := repository.NewTagRepository(database)
 
-	tagRepo.Fetch(defaultContext, "", 1)
+	// service
+	tagService := service.NewTagService(tagRepo, 10)
 
 	e.Use(middleware.RequestID())
 	p := prometheus.NewPrometheus("echo", nil)
@@ -55,7 +57,7 @@ func main() {
 	}))
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			return next(&customContext.CustomContext{c})
+			return next(&echoContext.EchoContext{c})
 		}
 	})
 
@@ -66,11 +68,14 @@ func main() {
 	})
 
 	e.GET("/debug", func(c echo.Context) error {
-		cc := c.(*customContext.CustomContext)
+		cc := c.(*echoContext.EchoContext)
 		cc.Foo()
 		cc.Bar()
 		return cc.String(200, "OK")
 	})
+
+	// handler
+	handler.NewTagHandler(e, tagService)
 
 	// Start server
 	go func() {

@@ -28,39 +28,6 @@ func (_m *TagService) Delete(ctx context.Context, id int64) error {
 	return r0
 }
 
-// Fetch provides a mock function with given fields: ctx, cursor, num
-func (_m *TagService) Fetch(ctx context.Context, cursor string, num int64) ([]entitie.Tag, string, error) {
-	ret := _m.Called(ctx, cursor, num)
-
-	var r0 []entitie.Tag
-	var r1 string
-	var r2 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, int64) ([]entitie.Tag, string, error)); ok {
-		return rf(ctx, cursor, num)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, int64) []entitie.Tag); ok {
-		r0 = rf(ctx, cursor, num)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]entitie.Tag)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, string, int64) string); ok {
-		r1 = rf(ctx, cursor, num)
-	} else {
-		r1 = ret.Get(1).(string)
-	}
-
-	if rf, ok := ret.Get(2).(func(context.Context, string, int64) error); ok {
-		r2 = rf(ctx, cursor, num)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
 // GetByID provides a mock function with given fields: ctx, id
 func (_m *TagService) GetByID(ctx context.Context, id int64) (entitie.Tag, error) {
 	ret := _m.Called(ctx, id)
