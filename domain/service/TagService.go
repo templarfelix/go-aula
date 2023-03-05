@@ -26,18 +26,15 @@ func (service tagService) Update(ctx context.Context, ar *entitie.Tag) error {
 	return service.repo.Update(ctx, ar)
 }
 func (service tagService) GetByName(ctx context.Context, title string) (entitie.Tag, error) {
-
 	ctx, cancel := context.WithTimeout(ctx, service.contextTimeout)
 	defer cancel()
 	res, err := service.repo.GetByName(ctx, title)
 	if err != nil {
 		return entitie.Tag{}, err
 	}
-
 	return res, err
 }
 func (service tagService) Store(ctx context.Context, data *entitie.Tag) error {
-
 	ctx, cancel := context.WithTimeout(ctx, service.contextTimeout)
 	defer cancel()
 	existedArticle, _ := service.GetByName(ctx, data.Name)

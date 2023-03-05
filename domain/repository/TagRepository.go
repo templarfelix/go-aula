@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
@@ -17,11 +16,9 @@ func NewTagRepository(conn *gorm.DB) _interface.TagRepository {
 }
 
 func (m *tagRepository) GetByID(ctx context.Context, id int64) (entitie.Tag, error) {
-	zap.L().Info("DEBUG")
 	var tag entitie.Tag
 	tx := m.DB.First(&tag, id) // find pr
 
-	zap.L().Info(tx.Error.Error())
 	if tx.Error != nil {
 		return entitie.Tag{}, tx.Error
 	}
@@ -38,6 +35,13 @@ func (m *tagRepository) Update(ctx context.Context, ar *entitie.Tag) error {
 }
 
 func (m *tagRepository) Store(ctx context.Context, a *entitie.Tag) error {
+
+	tx := m.DB.Create(&a)
+
+	if tx.Error != nil {
+		return tx.Error
+	}
+
 	return nil
 }
 
