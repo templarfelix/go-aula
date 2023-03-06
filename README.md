@@ -1,6 +1,10 @@
 # go-aula
 Projeto em Go para demonstrar um microservice
 
+# Baseado em
+https://github.com/bxcodec/go-clean-arch
+
+
 # o que vamos utilizar?
 
 ## golang
