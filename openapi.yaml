@@ -14,7 +14,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: https://productstore3.swagger.io/api/v3
+  - url: http://localhost:9090
 tags:
   - name: product
     description: Everything about your Products
@@ -26,7 +26,97 @@ tags:
     externalDocs:
       description: Find out more about our store
       url: http://swagger.io
+  - name: tag
+    description: Access to Tag Cruds
+    externalDocs:
+      description: Find out more about our tags
+      url: http://swagger.io
 paths:
+  /tag:
+    put:
+      tags:
+        - tag
+      summary: Update an existing tag
+      description: Update an existing tag by Id
+      operationId: updateTag
+      requestBody:
+        description: Update an existent tag in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Tag not found
+        '405':
+          description: Validation exception
+    post:
+      tags:
+        - tag
+      summary: Add a new tag to the store
+      description: Add a new tag to the store
+      operationId: addTag
+      requestBody:
+        description: Create a new tag in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '405':
+          description: Invalid input
+  /tag/{tagId}:
+    delete:
+      tags:
+        - tag
+      summary: Delete tag by ID
+      description: Delete tag
+      operationId: deleteTag
+      parameters:
+        - name: tagId
+          in: path
+          description: ID of the tag that needs to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Tag not found
+  /tag/getAll:
+    get:
+      tags:
+        - tag
+      summary: Finds Tags
+      description: Find tags.
+      operationId: findTags
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
   /product:
     put:
       tags:
@@ -40,21 +130,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Product'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Product'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Product'
         required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Product'
         '400':
@@ -75,21 +156,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Product'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Product'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Product'
         required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Product'
         '405':
@@ -123,11 +195,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
         '400':
           description: Invalid status value
   /product/findByTags:
@@ -156,11 +223,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
         '400':
           description: Invalid tag value
   /product/{productId}:
@@ -183,9 +245,6 @@ paths:
           description: successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Product'
         '400':
@@ -305,12 +364,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Order'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Order'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Order'
       responses:
         '200':
           description: successful operation
@@ -340,9 +393,6 @@ paths:
           description: successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Order'
         '400':
@@ -566,8 +616,5 @@ components:
       description: Product object that needs to be added to the store
       content:
         application/json:
-          schema:
-            $ref: '#/components/schemas/Product'
-        application/xml:
           schema:
             $ref: '#/components/schemas/Product'

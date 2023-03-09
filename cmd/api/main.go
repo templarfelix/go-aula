@@ -62,11 +62,6 @@ func main() {
 	})
 
 	// ROUTES
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-
 	e.GET("/debug", func(c echo.Context) error {
 		cc := c.(*echoContext.EchoContext)
 		cc.Foo()
