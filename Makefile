@@ -1,6 +1,8 @@
 PWD = $(shell pwd -L)
 GOCMD=go
 
+.PHONY: all
+
 all: help
 
 tidy: ## Downloads go dependencies
