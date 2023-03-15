@@ -9,7 +9,7 @@ import (
 )
 
 func Connect(Host, Port, User, Name, Password string) (*gorm.DB, error) {
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=verify-full",
 		Host,
 		Port,
 		User,

@@ -19,13 +19,15 @@ import (
 
 func main() {
 
-	e := echo.New()
+	// servidor web echo https://echo.labstack.com
+	echoInstance := echo.New()
 
+	// init logger https://github.com/uber-go/zap
 	logger, _ := zap.NewProduction()
 	zap.ReplaceGlobals(logger)
 	defer logger.Sync()
 
-	// database
+	// database https://gorm.io/docs/index.html
 	database, err := repository.Connect(env.Config.Database.Host, env.Config.Database.Port, env.Config.Database.User, env.Config.Database.Name, env.Config.Database.Password)
 	if err != nil {
 		zap.L().Fatal(err.Error(), zap.Error(err))
@@ -40,10 +42,10 @@ func main() {
 	// service
 	tagService := service.NewTagService(tagRepo, 10)
 
-	e.Use(middleware.RequestID())
+	echoInstance.Use(middleware.RequestID())
 	p := prometheus.NewPrometheus("echo", nil)
-	p.Use(e)
-	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+	p.Use(echoInstance)
+	echoInstance.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:    true,
 		LogStatus: true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
@@ -55,14 +57,14 @@ func main() {
 			return nil
 		},
 	}))
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+	echoInstance.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			return next(&echoContext.EchoContext{c})
 		}
 	})
 
 	// ROUTES
-	e.GET("/debug", func(c echo.Context) error {
+	echoInstance.GET("/debug", func(c echo.Context) error {
 		cc := c.(*echoContext.EchoContext)
 		cc.Foo()
 		cc.Bar()
@@ -70,12 +72,12 @@ func main() {
 	})
 
 	// handler
-	handler.NewTagHandler(e, tagService)
+	handler.NewTagHandler(echoInstance, tagService)
 
 	// Start server
 	go func() {
-		if err := e.Start(env.Config.Server.Address); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
+		if err := echoInstance.Start(env.Config.Server.Address); err != nil && err != http.ErrServerClosed {
+			echoInstance.Logger.Fatal("shutting down the server")
 		}
 	}()
 
@@ -84,7 +86,7 @@ func main() {
 	<-quit
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(env.Config.Server.Timeout)*time.Second)
 	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
+	if err := echoInstance.Shutdown(ctx); err != nil {
+		echoInstance.Logger.Fatal(err)
 	}
 }
