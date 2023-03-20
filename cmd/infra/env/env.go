@@ -8,7 +8,7 @@ import (
 type config struct {
 	Server struct {
 		Address string
-		Timeout int64
+		Timeout uint
 	}
 
 	Database struct {

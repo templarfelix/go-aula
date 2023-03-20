@@ -19,7 +19,7 @@ func NewTagService(repo _interface.TagRepository, timeout time.Duration) _interf
 	}
 }
 
-func (service tagService) GetByID(ctx context.Context, id int64) (entitie.Tag, error) {
+func (service tagService) GetByID(ctx context.Context, id uint) (entitie.Tag, error) {
 	return service.repo.GetByID(ctx, id)
 }
 func (service tagService) Update(ctx context.Context, ar *entitie.Tag) error {
@@ -44,6 +44,6 @@ func (service tagService) Store(ctx context.Context, data *entitie.Tag) error {
 	return service.repo.Store(ctx, data)
 
 }
-func (service tagService) Delete(ctx context.Context, id int64) error {
+func (service tagService) Delete(ctx context.Context, id uint) error {
 	return service.repo.Delete(ctx, id)
 }

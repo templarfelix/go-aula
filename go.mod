@@ -13,6 +13,7 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gorm.io/driver/postgres v1.4.8
 	gorm.io/gorm v1.24.6
+	moul.io/zapgorm2 v1.3.0
 )
 
 require (

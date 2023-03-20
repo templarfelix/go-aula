@@ -20,7 +20,7 @@ func TestGetByID(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
-		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockArticle, nil).Once()
+		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(mockArticle, nil).Once()
 		u := service.NewTagService(mockArticleRepo, time.Second*2)
 
 		a, err := u.GetByID(context.TODO(), mockArticle.ID)
@@ -31,7 +31,7 @@ func TestGetByID(t *testing.T) {
 		mockArticleRepo.AssertExpectations(t)
 	})
 	t.Run("error-failed", func(t *testing.T) {
-		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(entitie.Tag{}, errors.New("Unexpected")).Once()
+		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(entitie.Tag{}, errors.New("Unexpected")).Once()
 
 		u := service.NewTagService(mockArticleRepo, time.Second*2)
 

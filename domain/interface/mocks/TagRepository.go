@@ -15,11 +15,11 @@ type TagRepository struct {
 }
 
 // Delete provides a mock function with given fields: ctx, id
-func (_m *TagRepository) Delete(ctx context.Context, id int64) error {
+func (_m *TagRepository) Delete(ctx context.Context, id uint) error {
 	ret := _m.Called(ctx, id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, uint) error); ok {
 		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Error(0)
@@ -29,21 +29,21 @@ func (_m *TagRepository) Delete(ctx context.Context, id int64) error {
 }
 
 // GetByID provides a mock function with given fields: ctx, id
-func (_m *TagRepository) GetByID(ctx context.Context, id int64) (entitie.Tag, error) {
+func (_m *TagRepository) GetByID(ctx context.Context, id uint) (entitie.Tag, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 entitie.Tag
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) (entitie.Tag, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, uint) (entitie.Tag, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) entitie.Tag); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, uint) entitie.Tag); ok {
 		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(entitie.Tag)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, uint) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)

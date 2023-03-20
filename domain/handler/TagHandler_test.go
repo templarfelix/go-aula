@@ -27,7 +27,7 @@ func TestGetByID(t *testing.T) {
 
 	num := int(mockArticle.ID)
 
-	mockUCase.On("GetByID", mock.Anything, int64(num)).Return(mockArticle, nil)
+	mockUCase.On("GetByID", mock.Anything, uint(num)).Return(mockArticle, nil)
 
 	e := echo.New()
 	req, err := http.NewRequestWithContext(context.TODO(), echo.GET, "/tag/"+strconv.Itoa(num), strings.NewReader(""))

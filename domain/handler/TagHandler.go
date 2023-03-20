@@ -22,19 +22,20 @@ func NewTagHandler(echoInstance *echo.Echo, service _interface.TagService) {
 	handler := &TagHandler{
 		TagService: service,
 	}
-	echoInstance.GET("/tag/:id", handler.GetByID)
+	echoInstance.PUT("/tag", handler.Update)
 	echoInstance.POST("/tag", handler.Store)
+	echoInstance.GET("/tag/:id", handler.GetByID)
+
 }
 
 func (a *TagHandler) GetByID(echoContext echo.Context) error {
-	zap.L().Info("passou aqui")
 
 	idP, err := strconv.Atoi(echoContext.Param("id"))
 	if err != nil {
 		return echoContext.JSON(http.StatusNotFound, _interface.ErrNotFound.Error())
 	}
 
-	id := int64(idP)
+	id := uint(idP)
 	ctx := echoContext.Request().Context()
 
 	art, err := a.TagService.GetByID(ctx, id)
@@ -59,6 +60,27 @@ func (a *TagHandler) Store(echoContext echo.Context) (err error) {
 
 	ctx := echoContext.Request().Context()
 	err = a.TagService.Store(ctx, &ent)
+	if err != nil {
+		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+	}
+
+	return echoContext.JSON(http.StatusCreated, ent)
+}
+
+func (a *TagHandler) Update(echoContext echo.Context) (err error) {
+	var ent entitie.Tag
+	err = echoContext.Bind(&ent)
+	if err != nil {
+		return echoContext.JSON(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(&ent); !ok {
+		return echoContext.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	ctx := echoContext.Request().Context()
+	err = a.TagService.Update(ctx, &ent)
 	if err != nil {
 		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}

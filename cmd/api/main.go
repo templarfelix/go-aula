@@ -33,9 +33,6 @@ func main() {
 		zap.L().Fatal(err.Error(), zap.Error(err))
 	}
 
-	// migrate database?? fixme need?
-	repository.Migrate(database)
-
 	// repository
 	tagRepo := repository.NewTagRepository(database)
 

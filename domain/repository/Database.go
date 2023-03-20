@@ -2,10 +2,10 @@ package repository
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"microservice/domain/entitie"
+	"moul.io/zapgorm2"
 )
 
 func Connect(Host, Port, User, Name, Password string) (*gorm.DB, error) {
@@ -15,10 +15,8 @@ func Connect(Host, Port, User, Name, Password string) (*gorm.DB, error) {
 		User,
 		Name,
 		Password)
-	return gorm.Open(postgres.Open(connectionString), &gorm.Config{})
-}
 
-func Migrate(Instance *gorm.DB) {
-	Instance.AutoMigrate(&entitie.Tag{})
-	log.Println("Database Migration Completed...")
+	logger := zapgorm2.New(zap.L())
+	logger.SetAsDefault()
+	return gorm.Open(postgres.Open(connectionString), &gorm.Config{Logger: logger})
 }
