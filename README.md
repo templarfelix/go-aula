@@ -40,3 +40,23 @@ endpoints
 go generate ./...
 
 ### compilar
+
+
+##
+ # tag
+    ## id    
+        1
+    ## nome
+        cafe
+    ## ativo
+        true
+    ## deleted_at
+        true
+
+ # produto
+    ## id
+        1
+    ## nome 
+        banana
+    ## id_tag
+        1   where deleted_at = false and ative = true

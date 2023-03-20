@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 	validator "gopkg.in/go-playground/validator.v9"
+	"gorm.io/gorm"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
 	"net/http"
@@ -25,7 +26,31 @@ func NewTagHandler(echoInstance *echo.Echo, service _interface.TagService) {
 	echoInstance.PUT("/tag", handler.Update)
 	echoInstance.POST("/tag", handler.Store)
 	echoInstance.GET("/tag/:id", handler.GetByID)
+	echoInstance.DELETE("/tag/:id", handler.Delete)
 
+}
+
+func (a *TagHandler) Delete(echoContext echo.Context) error {
+
+	idP, err := strconv.Atoi(echoContext.Param("id"))
+	if err != nil {
+		return echoContext.JSON(http.StatusNotFound, _interface.ErrNotFound.Error())
+	}
+
+	id := uint(idP)
+	ctx := echoContext.Request().Context()
+
+	tag, err := a.TagService.GetByID(ctx, id)
+	if err != nil {
+		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+	}
+
+	err = a.TagService.Delete(ctx, tag.ID)
+	if err != nil {
+		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+	}
+
+	return echoContext.JSON(http.StatusOK, "")
 }
 
 func (a *TagHandler) GetByID(echoContext echo.Context) error {
@@ -96,6 +121,8 @@ func getStatusCode(err error) int {
 	zap.L().Error("error", zap.Error(err))
 
 	switch err {
+	case gorm.ErrRecordNotFound:
+		return http.StatusNotFound
 	case _interface.ErrInternalServerError:
 		return http.StatusInternalServerError
 	case _interface.ErrNotFound:
