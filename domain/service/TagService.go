@@ -22,9 +22,15 @@ func NewTagService(repo _interface.TagRepository, timeout time.Duration) _interf
 func (service tagService) GetByID(ctx context.Context, id uint) (entitie.Tag, error) {
 	return service.repo.GetByID(ctx, id)
 }
+
+func (service tagService) GetAll(ctx context.Context) ([]entitie.Tag, error) {
+	return service.repo.GetAll(ctx)
+}
+
 func (service tagService) Update(ctx context.Context, ar *entitie.Tag) error {
 	return service.repo.Update(ctx, ar)
 }
+
 func (service tagService) GetByName(ctx context.Context, title string) (entitie.Tag, error) {
 	ctx, cancel := context.WithTimeout(ctx, service.contextTimeout)
 	defer cancel()

@@ -26,6 +26,15 @@ func (m *tagRepository) GetByID(ctx context.Context, id uint) (entitie.Tag, erro
 	return tag, nil
 }
 
+func (m *tagRepository) GetAll(ctx context.Context) ([]entitie.Tag, error) {
+	var tag []entitie.Tag
+	tx := m.DB.Find(&tag)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return tag, nil
+}
+
 func (m *tagRepository) GetByName(ctx context.Context, title string) (entitie.Tag, error) {
 	return entitie.Tag{}, nil
 }

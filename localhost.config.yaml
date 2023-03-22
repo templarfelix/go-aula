@@ -4,8 +4,8 @@
     "address": ":9090",
     "timeout": "30",
   },
-  "context":{
-    "timeout":2
+  "context": {
+    "timeout": 2
   },
   "database": {
     "host": "localhost",
