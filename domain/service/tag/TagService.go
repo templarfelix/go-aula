@@ -1,4 +1,4 @@
-package service
+package tag
 
 import (
 	"context"
@@ -40,6 +40,7 @@ func (service tagService) GetByName(ctx context.Context, title string) (entitie.
 	}
 	return res, err
 }
+
 func (service tagService) Store(ctx context.Context, data *entitie.Tag) error {
 	ctx, cancel := context.WithTimeout(ctx, service.contextTimeout)
 	defer cancel()
@@ -50,6 +51,7 @@ func (service tagService) Store(ctx context.Context, data *entitie.Tag) error {
 	return service.repo.Store(ctx, data)
 
 }
+
 func (service tagService) Delete(ctx context.Context, id uint) error {
 	return service.repo.Delete(ctx, id)
 }

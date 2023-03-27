@@ -1,4 +1,4 @@
-package handler_test
+package category_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"microservice/domain/entitie"
-	tagHandler "microservice/domain/handler"
+	"microservice/domain/handler/category"
 	"microservice/domain/interface/mocks"
 	"net/http"
 	"net/http/httptest"
@@ -19,18 +19,18 @@ import (
 )
 
 func TestGetByID(t *testing.T) {
-	var mockArticle entitie.Tag
+	var mockArticle entitie.Category
 	err := faker.FakeData(&mockArticle)
 	assert.NoError(t, err)
 
-	mockUCase := new(mocks.TagService)
+	mockUCase := new(mocks.CategoryService)
 
 	num := int(mockArticle.ID)
 
 	mockUCase.On("GetByID", mock.Anything, uint(num)).Return(mockArticle, nil)
 
 	e := echo.New()
-	req, err := http.NewRequestWithContext(context.TODO(), echo.GET, "/tag/"+strconv.Itoa(num), strings.NewReader(""))
+	req, err := http.NewRequestWithContext(context.TODO(), echo.GET, "/category/"+strconv.Itoa(num), strings.NewReader(""))
 	assert.NoError(t, err)
 
 	rec := httptest.NewRecorder()
@@ -38,8 +38,8 @@ func TestGetByID(t *testing.T) {
 	c.SetPath("article/:id")
 	c.SetParamNames("id")
 	c.SetParamValues(strconv.Itoa(num))
-	handler := tagHandler.TagHandler{
-		TagService: mockUCase,
+	handler := category.CategoryHandler{
+		CategoryService: mockUCase,
 	}
 	err = handler.GetByID(c)
 	require.NoError(t, err)

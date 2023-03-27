@@ -1,4 +1,4 @@
-package service_test
+package category_test
 
 import (
 	"context"
@@ -8,20 +8,20 @@ import (
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
 	"microservice/domain/interface/mocks"
-	"microservice/domain/service"
+	"microservice/domain/service/category"
 	"testing"
 	"time"
 )
 
 func TestGetByID(t *testing.T) {
-	mockArticleRepo := new(mocks.TagRepository)
-	mockArticle := entitie.Tag{
+	mockArticleRepo := new(mocks.CategoryRepository)
+	mockArticle := entitie.Category{
 		Name: "Hello",
 	}
 
 	t.Run("success", func(t *testing.T) {
 		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(mockArticle, nil).Once()
-		u := service.NewTagService(mockArticleRepo, time.Second*2)
+		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
 
 		a, err := u.GetByID(context.TODO(), mockArticle.ID)
 
@@ -31,22 +31,22 @@ func TestGetByID(t *testing.T) {
 		mockArticleRepo.AssertExpectations(t)
 	})
 	t.Run("error-failed", func(t *testing.T) {
-		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(entitie.Tag{}, errors.New("Unexpected")).Once()
+		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(entitie.Category{}, errors.New("Unexpected")).Once()
 
-		u := service.NewTagService(mockArticleRepo, time.Second*2)
+		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
 
 		a, err := u.GetByID(context.TODO(), mockArticle.ID)
 
 		assert.Error(t, err)
-		assert.Equal(t, entitie.Tag{}, a)
+		assert.Equal(t, entitie.Category{}, a)
 
 		mockArticleRepo.AssertExpectations(t)
 	})
 }
 
 func TestStore(t *testing.T) {
-	mockArticleRepo := new(mocks.TagRepository)
-	mockArticle := entitie.Tag{
+	mockArticleRepo := new(mocks.CategoryRepository)
+	mockArticle := entitie.Category{
 		Name: "Hello",
 	}
 
@@ -54,10 +54,10 @@ func TestStore(t *testing.T) {
 		tempMockArticle := mockArticle
 		tempMockArticle.ID = 0
 
-		mockArticleRepo.On("GetByName", mock.Anything, mock.AnythingOfType("string")).Return(entitie.Tag{}, _interface.ErrNotFound).Once()
-		mockArticleRepo.On("Store", mock.Anything, mock.AnythingOfType("*entitie.Tag")).Return(nil).Once()
+		mockArticleRepo.On("GetByName", mock.Anything, mock.AnythingOfType("string")).Return(entitie.Category{}, _interface.ErrNotFound).Once()
+		mockArticleRepo.On("Store", mock.Anything, mock.AnythingOfType("*entitie.Category")).Return(nil).Once()
 
-		u := service.NewTagService(mockArticleRepo, time.Second*2)
+		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
 
 		err := u.Store(context.TODO(), &tempMockArticle)
 
@@ -70,7 +70,7 @@ func TestStore(t *testing.T) {
 
 		mockArticleRepo.On("GetByName", mock.Anything, mock.AnythingOfType("string")).Return(existingArticle, nil).Once()
 
-		u := service.NewTagService(mockArticleRepo, time.Second*2)
+		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
 
 		err := u.Store(context.TODO(), &mockArticle)
 

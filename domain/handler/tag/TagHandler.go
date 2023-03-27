@@ -1,19 +1,14 @@
-package handler
+package tag
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
-	validator "gopkg.in/go-playground/validator.v9"
-	"gorm.io/gorm"
+	"gopkg.in/go-playground/validator.v9"
 	"microservice/domain/entitie"
+	"microservice/domain/handler"
 	_interface "microservice/domain/interface"
 	"net/http"
 	"strconv"
 )
-
-type ResponseError struct {
-	Message string `json:"message"`
-}
 
 type TagHandler struct {
 	TagService _interface.TagService
@@ -43,12 +38,12 @@ func (a *TagHandler) Delete(echoContext echo.Context) error {
 
 	tag, err := a.TagService.GetByID(ctx, id)
 	if err != nil {
-		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
 	}
 
 	err = a.TagService.Delete(ctx, tag.ID)
 	if err != nil {
-		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, "")
@@ -66,7 +61,7 @@ func (a *TagHandler) GetByID(echoContext echo.Context) error {
 
 	art, err := a.TagService.GetByID(ctx, id)
 	if err != nil {
-		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, art)
@@ -78,7 +73,7 @@ func (a *TagHandler) GetAll(echoContext echo.Context) error {
 
 	art, err := a.TagService.GetAll(ctx)
 	if err != nil {
-		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, art)
@@ -99,7 +94,7 @@ func (a *TagHandler) Store(echoContext echo.Context) (err error) {
 	ctx := echoContext.Request().Context()
 	err = a.TagService.Store(ctx, &ent)
 	if err != nil {
-		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusCreated, ent)
@@ -120,31 +115,10 @@ func (a *TagHandler) Update(echoContext echo.Context) (err error) {
 	ctx := echoContext.Request().Context()
 	err = a.TagService.Update(ctx, &ent)
 	if err != nil {
-		return echoContext.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusCreated, ent)
-}
-
-func getStatusCode(err error) int {
-	if err == nil {
-		return http.StatusOK
-	}
-
-	zap.L().Error("error", zap.Error(err))
-
-	switch err {
-	case gorm.ErrRecordNotFound:
-		return http.StatusNotFound
-	case _interface.ErrInternalServerError:
-		return http.StatusInternalServerError
-	case _interface.ErrNotFound:
-		return http.StatusNotFound
-	case _interface.ErrConflict:
-		return http.StatusConflict
-	default:
-		return http.StatusInternalServerError
-	}
 }
 
 func isRequestValid(m *entitie.Tag) (bool, error) {
