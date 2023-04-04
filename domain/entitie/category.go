@@ -5,6 +5,6 @@ import (
 )
 
 type Category struct {
-	Name string `json:"name" validate:"required"`
+	Name string `json:"name" validate:"required" gorm:"unique"`
 	gorm.Model
 }

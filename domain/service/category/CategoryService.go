@@ -44,10 +44,6 @@ func (service categoryService) GetByName(ctx context.Context, title string) (ent
 func (service categoryService) Store(ctx context.Context, data *entitie.Category) error {
 	ctx, cancel := context.WithTimeout(ctx, service.contextTimeout)
 	defer cancel()
-	existedArticle, _ := service.GetByName(ctx, data.Name)
-	if existedArticle != (entitie.Category{}) {
-		return _interface.ErrConflict
-	}
 	return service.repo.Store(ctx, data)
 
 }
