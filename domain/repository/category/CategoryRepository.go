@@ -36,7 +36,12 @@ func (m *categoryRepository) GetAll(ctx context.Context) ([]entitie.Category, er
 }
 
 func (m *categoryRepository) GetByName(ctx context.Context, title string) (entitie.Category, error) {
-	return entitie.Category{}, nil
+	var category entitie.Category
+	tx := m.DB.Model(&entitie.Category{Name: title}).First(&category)
+	if tx.Error != nil {
+		return entitie.Category{}, tx.Error
+	}
+	return category, nil
 }
 
 func (m *categoryRepository) Update(ctx context.Context, ar *entitie.Category) error {

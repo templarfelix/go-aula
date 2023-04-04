@@ -36,7 +36,12 @@ func (m *tagRepository) GetAll(ctx context.Context) ([]entitie.Tag, error) {
 }
 
 func (m *tagRepository) GetByName(ctx context.Context, title string) (entitie.Tag, error) {
-	return entitie.Tag{}, nil
+	var tag entitie.Tag
+	tx := m.DB.Model(&entitie.Tag{Name: title}).First(&tag)
+	if tx.Error != nil {
+		return entitie.Tag{}, tx.Error
+	}
+	return tag, nil
 }
 
 func (m *tagRepository) Update(ctx context.Context, ar *entitie.Tag) error {
