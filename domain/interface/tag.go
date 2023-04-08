@@ -2,8 +2,18 @@ package _interface
 
 import (
 	"context"
+	"github.com/labstack/echo/v4"
 	"microservice/domain/entitie"
 )
+
+type TagHandler interface {
+	GetByID(echo.Context) error
+	Update(echoContext echo.Context) error
+	//GetByName(echo.Context) error
+	GetAll(echo.Context) error
+	Store(echo.Context) error
+	Delete(echo.Context) error
+}
 
 //go:generate mockery --name TagService
 type TagService interface {
@@ -11,7 +21,7 @@ type TagService interface {
 	Update(ctx context.Context, ar *entitie.Tag) error
 	GetByName(ctx context.Context, title string) (entitie.Tag, error)
 	GetAll(ctx context.Context) ([]entitie.Tag, error)
-	Store(context.Context, *entitie.Tag) error
+	Store(ctx context.Context, entitie *entitie.Tag) error
 	Delete(ctx context.Context, id uint) error
 }
 

@@ -2,6 +2,7 @@ package tag
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
@@ -11,9 +12,8 @@ type tagRepository struct {
 	*gorm.DB
 }
 
-func NewTagRepository(conn *gorm.DB) _interface.TagRepository {
-	// FIXME the best WAY?
-	conn.AutoMigrate(&entitie.Tag{})
+func ProvideTagRepository(logger *zap.SugaredLogger, conn *gorm.DB) _interface.TagRepository {
+	logger.Info("Executing ProvideTagRepository.")
 	return &tagRepository{conn}
 }
 
@@ -37,7 +37,7 @@ func (m *tagRepository) GetAll(ctx context.Context) ([]entitie.Tag, error) {
 
 func (m *tagRepository) GetByName(ctx context.Context, title string) (entitie.Tag, error) {
 	var tag entitie.Tag
-	tx := m.DB.Model(&entitie.Tag{Name: title}).First(&tag)
+	tx := m.DB.Model(&entitie.Tag{}).Where(&entitie.Tag{Name: title}).First(&tag)
 	if tx.Error != nil {
 		return entitie.Tag{}, tx.Error
 	}

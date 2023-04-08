@@ -6,10 +6,6 @@ type EchoContext struct {
 	echo.Context
 }
 
-func (c *EchoContext) Foo() {
-	println("foo")
-}
-
-func (c *EchoContext) Bar() {
-	println("bar")
+func (echoContext *EchoContext) GetCorrelationID() string {
+	return echoContext.Request().Header.Get("x-correlation-id")
 }

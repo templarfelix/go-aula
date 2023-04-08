@@ -2,6 +2,7 @@ package tag
 
 import (
 	"context"
+	"microservice/cmd/infra/config"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
 	"time"
@@ -12,10 +13,10 @@ type tagService struct {
 	contextTimeout time.Duration
 }
 
-func NewTagService(repo _interface.TagRepository, timeout time.Duration) _interface.TagService {
+func ProvideTagService(repo _interface.TagRepository, config config.Config) _interface.TagService {
 	return &tagService{
 		repo:           repo,
-		contextTimeout: timeout,
+		contextTimeout: time.Duration(config.Server.Timeout),
 	}
 }
 

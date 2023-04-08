@@ -1,11 +1,11 @@
-package env
+package config
 
 import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
-type config struct {
+type Config struct {
 	Server struct {
 		Address string
 		Timeout uint
@@ -20,21 +20,22 @@ type config struct {
 	}
 }
 
-var Config config
-
-func init() {
+func ProvideConfig(logger *zap.SugaredLogger) Config {
+	logger.Info("Executing ProvideConfig.")
+	var Config Config
 	viper.SetConfigFile(`cloud.config.yaml`)
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			zap.L().Fatal("config file not found", zap.Error(err))
+			logger.Fatal("config file not found", zap.Error(err))
 		} else {
-			zap.L().Fatal("error on config", zap.Error(err))
+			logger.Fatal("error on config", zap.Error(err))
 		}
 
 	}
 	err = viper.Unmarshal(&Config)
 	if err != nil {
-		zap.L().Fatal("error on config", zap.Error(err))
+		logger.Fatal("error on config", zap.Error(err))
 	}
+	return Config
 }

@@ -8,8 +8,8 @@ require (
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
+	go.uber.org/fx v1.19.2
 	go.uber.org/zap v1.24.0
-	golang.org/x/net v0.7.0
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gorm.io/driver/postgres v1.4.8
 	gorm.io/gorm v1.24.6
@@ -53,8 +53,10 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
+	go.uber.org/dig v1.16.1 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/time v0.3.0 // indirect

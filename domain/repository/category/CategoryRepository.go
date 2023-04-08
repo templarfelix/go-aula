@@ -13,7 +13,7 @@ type categoryRepository struct {
 
 func NewCategoryRepository(conn *gorm.DB) _interface.CategoryRepository {
 	// FIXME the best WAY?
-	conn.AutoMigrate(&entitie.Category{})
+
 	return &categoryRepository{conn}
 }
 
