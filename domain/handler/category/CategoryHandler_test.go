@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"microservice/domain/entitie"
 	"microservice/domain/handler/category"
 	"microservice/domain/interface/mocks"
@@ -38,9 +39,12 @@ func TestGetByID(t *testing.T) {
 	c.SetPath("article/:id")
 	c.SetParamNames("id")
 	c.SetParamValues(strconv.Itoa(num))
-	handler := category.CategoryHandler{
-		CategoryService: mockUCase,
-	}
+
+	zap := zap.NewExample()
+	slogger := zap.Sugar()
+
+	handler := category.ProvideCategoryHandler(slogger, mockUCase)
+
 	err = handler.GetByID(c)
 	require.NoError(t, err)
 

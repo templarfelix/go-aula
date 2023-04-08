@@ -8,7 +8,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	customEchoContext "microservice/cmd/infra/context"
 	"microservice/domain/entitie"
-	"microservice/domain/handler"
+	"microservice/domain/handler/helper"
 	_interface "microservice/domain/interface"
 	"net/http"
 	"strconv"
@@ -16,14 +16,14 @@ import (
 
 type tagHandler struct {
 	TagService _interface.TagService
-	logger     *zap.SugaredLogger
+	Logger     *zap.SugaredLogger
 }
 
 func ProvideTagHandler(logger *zap.SugaredLogger, service _interface.TagService) _interface.TagHandler {
 	logger.Info("Executing ProvideTagHandler.")
 	return &tagHandler{
 		TagService: service,
-		logger:     logger,
+		Logger:     logger,
 	}
 }
 
@@ -61,12 +61,12 @@ func (a tagHandler) Delete(echoContext echo.Context) error {
 
 	tag, err := a.TagService.GetByID(ctx, id)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	err = a.TagService.Delete(ctx, tag.ID)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, "")
@@ -84,7 +84,7 @@ func (a tagHandler) GetByID(echoContext echo.Context) error {
 
 	art, err := a.TagService.GetByID(ctx, id)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, art)
@@ -93,13 +93,13 @@ func (a tagHandler) GetByID(echoContext echo.Context) error {
 func (a tagHandler) GetAll(echoContext echo.Context) error {
 
 	cc := echoContext.(*customEchoContext.EchoContext)
-	a.logger.Info("Correlation", cc.GetCorrelationID())
+	a.Logger.Info("Correlation", cc.GetCorrelationID())
 
 	ctx := echoContext.Request().Context()
 
 	art, err := a.TagService.GetAll(ctx)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, art)
@@ -120,7 +120,7 @@ func (a tagHandler) Store(echoContext echo.Context) (err error) {
 	ctx := echoContext.Request().Context()
 	err = a.TagService.Store(ctx, &ent)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusCreated, ent)
@@ -141,7 +141,7 @@ func (a tagHandler) Update(echoContext echo.Context) (err error) {
 	ctx := echoContext.Request().Context()
 	err = a.TagService.Update(ctx, &ent)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusCreated, ent)

@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+	"microservice/cmd/infra/config"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
 	"time"
@@ -12,10 +13,10 @@ type categoryService struct {
 	contextTimeout time.Duration
 }
 
-func NewCategoryService(repo _interface.CategoryRepository, timeout time.Duration) _interface.CategoryService {
+func ProvideCategoryService(repo _interface.CategoryRepository, config config.Config) _interface.CategoryService {
 	return &categoryService{
 		repo:           repo,
-		contextTimeout: timeout,
+		contextTimeout: time.Duration(config.Server.Timeout),
 	}
 }
 

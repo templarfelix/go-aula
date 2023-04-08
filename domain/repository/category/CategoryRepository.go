@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
@@ -11,9 +12,8 @@ type categoryRepository struct {
 	*gorm.DB
 }
 
-func NewCategoryRepository(conn *gorm.DB) _interface.CategoryRepository {
-	// FIXME the best WAY?
-
+func ProvideCategoryRepository(logger *zap.SugaredLogger, conn *gorm.DB) _interface.CategoryRepository {
+	logger.Info("Executing ProvideCategoryRepository.")
 	return &categoryRepository{conn}
 }
 

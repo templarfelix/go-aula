@@ -8,9 +8,9 @@ import (
 	"microservice/cmd/infra/database"
 	"microservice/cmd/infra/http"
 	"microservice/cmd/infra/log"
-	tagHandler "microservice/domain/handler/tag"
-	tagRepository "microservice/domain/repository/tag"
-	tagService "microservice/domain/service/tag"
+	"microservice/domain/handler"
+	"microservice/domain/repository"
+	"microservice/domain/service"
 )
 
 func main() {
@@ -30,13 +30,14 @@ func main() {
 		fx.Provide(
 			database.ProvideDatabase,
 		),
-		fx.Provide(tagRepository.ProvideTagRepository),
-		fx.Provide(tagService.ProvideTagService),
-		fx.Provide(tagHandler.ProvideTagHandler),
+
 		fx.Invoke(http.RegisterHooks),
 		fx.Invoke(http.RegisterMiddlewareHooks),
 		fx.Invoke(database.RegisterHooks),
-		fx.Invoke(tagHandler.RegisterHooks),
+
+		repository.Module,
+		service.Module,
+		handler.Module,
 	).Run()
 
 }

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"microservice/cmd/infra/config"
 	"microservice/domain/entitie"
 	_interface "microservice/domain/interface"
 	"microservice/domain/interface/mocks"
 	"microservice/domain/service/category"
 	"testing"
-	"time"
 )
 
 func TestGetByID(t *testing.T) {
@@ -21,7 +21,7 @@ func TestGetByID(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(mockArticle, nil).Once()
-		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
+		u := category.ProvideCategoryService(mockArticleRepo, config.Config{})
 
 		a, err := u.GetByID(context.TODO(), mockArticle.ID)
 
@@ -33,7 +33,7 @@ func TestGetByID(t *testing.T) {
 	t.Run("error-failed", func(t *testing.T) {
 		mockArticleRepo.On("GetByID", mock.Anything, mock.AnythingOfType("uint")).Return(entitie.Category{}, errors.New("Unexpected")).Once()
 
-		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
+		u := category.ProvideCategoryService(mockArticleRepo, config.Config{})
 
 		a, err := u.GetByID(context.TODO(), mockArticle.ID)
 
@@ -57,7 +57,7 @@ func TestStore(t *testing.T) {
 		mockArticleRepo.On("GetByName", mock.Anything, mock.AnythingOfType("string")).Return(entitie.Category{}, _interface.ErrNotFound).Once()
 		mockArticleRepo.On("Store", mock.Anything, mock.AnythingOfType("*entitie.Category")).Return(nil).Once()
 
-		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
+		u := category.ProvideCategoryService(mockArticleRepo, config.Config{})
 
 		err := u.Store(context.TODO(), &tempMockArticle)
 
@@ -70,7 +70,7 @@ func TestStore(t *testing.T) {
 
 		mockArticleRepo.On("GetByName", mock.Anything, mock.AnythingOfType("string")).Return(existingArticle, nil).Once()
 
-		u := category.NewCategoryService(mockArticleRepo, time.Second*2)
+		u := category.ProvideCategoryService(mockArticleRepo, config.Config{})
 
 		err := u.Store(context.TODO(), &mockArticle)
 

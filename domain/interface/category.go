@@ -2,8 +2,18 @@ package _interface
 
 import (
 	"context"
+	"github.com/labstack/echo/v4"
 	"microservice/domain/entitie"
 )
+
+type CategoryHandler interface {
+	GetByID(echo.Context) error
+	Update(echoContext echo.Context) error
+	//GetByName(echo.Context) error
+	GetAll(echo.Context) error
+	Store(echo.Context) error
+	Delete(echo.Context) error
+}
 
 //go:generate mockery --name CategoryService
 type CategoryService interface {

@@ -1,32 +1,54 @@
 package category
 
 import (
+	"context"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gopkg.in/go-playground/validator.v9"
 	"microservice/domain/entitie"
-	"microservice/domain/handler"
+	"microservice/domain/handler/helper"
 	_interface "microservice/domain/interface"
 	"net/http"
 	"strconv"
 )
 
-type CategoryHandler struct {
+type categoryHandler struct {
 	CategoryService _interface.CategoryService
+	Logger          *zap.SugaredLogger
 }
 
-func NewCategoryHandler(echoInstance *echo.Echo, service _interface.CategoryService) {
-	handler := &CategoryHandler{
+func ProvideCategoryHandler(logger *zap.SugaredLogger, service _interface.CategoryService) _interface.CategoryHandler {
+	logger.Info("Executing ProvideCategoryHandler.")
+	return &categoryHandler{
 		CategoryService: service,
+		Logger:          logger,
 	}
-	echoInstance.PUT("/category", handler.Update)
-	echoInstance.POST("/category", handler.Store)
-	echoInstance.GET("/category/:id", handler.GetByID)
-	echoInstance.DELETE("/category/:id", handler.Delete)
-	echoInstance.GET("/category/getAll", handler.GetAll)
-
 }
 
-func (a *CategoryHandler) Delete(echoContext echo.Context) error {
+func RegisterHooks(
+	lifecycle fx.Lifecycle,
+	handler _interface.CategoryHandler,
+	echoInstance *echo.Echo,
+) {
+	lifecycle.Append(
+		fx.Hook{
+			OnStart: func(context.Context) error {
+				echoInstance.PUT("/category", handler.Update)
+				echoInstance.POST("/category", handler.Store)
+				echoInstance.GET("/category/:id", handler.GetByID)
+				echoInstance.DELETE("/category/:id", handler.Delete)
+				echoInstance.GET("/category/getAll", handler.GetAll)
+				return nil
+			},
+			OnStop: func(context.Context) error {
+				return nil
+			},
+		},
+	)
+}
+
+func (a *categoryHandler) Delete(echoContext echo.Context) error {
 
 	idP, err := strconv.Atoi(echoContext.Param("id"))
 	if err != nil {
@@ -38,18 +60,18 @@ func (a *CategoryHandler) Delete(echoContext echo.Context) error {
 
 	category, err := a.CategoryService.GetByID(ctx, id)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	err = a.CategoryService.Delete(ctx, category.ID)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, "")
 }
 
-func (a *CategoryHandler) GetByID(echoContext echo.Context) error {
+func (a *categoryHandler) GetByID(echoContext echo.Context) error {
 
 	idP, err := strconv.Atoi(echoContext.Param("id"))
 	if err != nil {
@@ -61,25 +83,25 @@ func (a *CategoryHandler) GetByID(echoContext echo.Context) error {
 
 	art, err := a.CategoryService.GetByID(ctx, id)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, art)
 }
 
-func (a *CategoryHandler) GetAll(echoContext echo.Context) error {
+func (a *categoryHandler) GetAll(echoContext echo.Context) error {
 
 	ctx := echoContext.Request().Context()
 
 	art, err := a.CategoryService.GetAll(ctx)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusOK, art)
 }
 
-func (a *CategoryHandler) Store(echoContext echo.Context) (err error) {
+func (a *categoryHandler) Store(echoContext echo.Context) (err error) {
 	var ent entitie.Category
 	err = echoContext.Bind(&ent)
 	if err != nil {
@@ -94,13 +116,13 @@ func (a *CategoryHandler) Store(echoContext echo.Context) (err error) {
 	ctx := echoContext.Request().Context()
 	err = a.CategoryService.Store(ctx, &ent)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusCreated, ent)
 }
 
-func (a *CategoryHandler) Update(echoContext echo.Context) (err error) {
+func (a *categoryHandler) Update(echoContext echo.Context) (err error) {
 	var ent entitie.Category
 	err = echoContext.Bind(&ent)
 	if err != nil {
@@ -115,7 +137,7 @@ func (a *CategoryHandler) Update(echoContext echo.Context) (err error) {
 	ctx := echoContext.Request().Context()
 	err = a.CategoryService.Update(ctx, &ent)
 	if err != nil {
-		return echoContext.JSON(handler.GetStatusCode(err), handler.ResponseError{Message: err.Error()})
+		return echoContext.JSON(helper.GetStatusCode(err), helper.ResponseError{Message: err.Error()})
 	}
 
 	return echoContext.JSON(http.StatusCreated, ent)
