@@ -45,8 +45,8 @@ func (service tagService) GetByName(ctx context.Context, title string) (entitie.
 func (service tagService) Store(ctx context.Context, data *entitie.Tag) error {
 	ctx, cancel := context.WithTimeout(ctx, service.contextTimeout)
 	defer cancel()
-	existedArticle, _ := service.GetByName(ctx, data.Name)
-	if existedArticle != (entitie.Tag{}) {
+	existedEntity, _ := service.GetByName(ctx, data.Name)
+	if existedEntity != (entitie.Tag{}) {
 		return _interface.ErrConflict
 	}
 	return service.repo.Store(ctx, data)
