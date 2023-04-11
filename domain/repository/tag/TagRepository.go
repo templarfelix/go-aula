@@ -35,9 +35,9 @@ func (m *tagRepository) GetAll(ctx context.Context) ([]entitie.Tag, error) {
 	return tag, nil
 }
 
-func (m *tagRepository) GetByName(ctx context.Context, title string) (entitie.Tag, error) {
+func (m *tagRepository) GetByName(ctx context.Context, name string) (entitie.Tag, error) {
 	var tag entitie.Tag
-	tx := m.DB.Model(&entitie.Tag{}).Where(&entitie.Tag{Name: title}).First(&tag)
+	tx := m.DB.Model(&entitie.Tag{}).Where(&entitie.Tag{Name: name}).First(&tag)
 	if tx.Error != nil {
 		return entitie.Tag{}, tx.Error
 	}

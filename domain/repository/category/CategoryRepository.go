@@ -35,9 +35,9 @@ func (m *categoryRepository) GetAll(ctx context.Context) ([]entitie.Category, er
 	return category, nil
 }
 
-func (m *categoryRepository) GetByName(ctx context.Context, title string) (entitie.Category, error) {
+func (m *categoryRepository) GetByName(ctx context.Context, name string) (entitie.Category, error) {
 	var category entitie.Category
-	tx := m.DB.Model(&entitie.Category{Name: title}).First(&category)
+	tx := m.DB.Model(&entitie.Category{}).Where(&entitie.Category{Name: name}).First(&category)
 	if tx.Error != nil {
 		return entitie.Category{}, tx.Error
 	}
