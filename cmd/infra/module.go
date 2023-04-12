@@ -26,4 +26,5 @@ var Module = fx.Module("infra",
 	fx.Invoke(http.RegisterHooks),
 	fx.Invoke(http.RegisterMiddlewareHooks),
 	fx.Invoke(database.RegisterHooks),
+	fx.Invoke(log.RegisterHooks),
 )
