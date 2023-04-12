@@ -5,6 +5,9 @@ GOCMD=go
 
 all: help
 
+update: ## update libs
+	$(GOCMD) get -u ./...
+
 tidy: ## Downloads go dependencies
 	$(GOCMD) mod tidy
 
