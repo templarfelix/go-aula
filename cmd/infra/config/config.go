@@ -6,6 +6,10 @@ import (
 )
 
 type Config struct {
+	App string
+	Log struct {
+		Level string
+	}
 	Server struct {
 		Address string
 		Timeout uint

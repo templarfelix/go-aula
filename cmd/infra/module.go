@@ -6,6 +6,7 @@ import (
 	"microservice/cmd/infra/database"
 	"microservice/cmd/infra/http"
 	"microservice/cmd/infra/log"
+	"microservice/cmd/infra/opentelemetry"
 )
 
 var Module = fx.Module("infra",
@@ -22,9 +23,14 @@ var Module = fx.Module("infra",
 	fx.Provide(
 		database.ProvideDatabase,
 	),
+	fx.Provide(
+		opentelemetry.ProvideTracerProvider,
+		opentelemetry.ProvideMeterProvider,
+	),
 
 	fx.Invoke(http.RegisterHooks),
 	fx.Invoke(http.RegisterMiddlewareHooks),
 	fx.Invoke(database.RegisterHooks),
 	fx.Invoke(log.RegisterHooks),
+	fx.Invoke(opentelemetry.RegisterHooks),
 )

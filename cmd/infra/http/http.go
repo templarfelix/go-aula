@@ -72,7 +72,6 @@ func RegisterMiddlewareHooks(
 						return next(&customEchoContext.EchoContext{c})
 					}
 				})
-
 				return nil
 			},
 			OnStop: func(context.Context) error {
