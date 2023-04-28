@@ -1,9 +1,10 @@
 tasks:
   - init: go get 
+    command: make start
 
 github:
-    prebuilds:
-        pullRequestsFromForks: true
+  prebuilds:
+    pullRequestsFromForks: true
 
 ports:
   - port: 8080
@@ -15,6 +16,4 @@ vscode:
   extensions:
     - golang.go
     - DavidAnson.vscode-markdownlint
-    - mdickin.markdown-shortcuts
     - timonwong.shellcheck
-    - premparihar.gotestexplorer
