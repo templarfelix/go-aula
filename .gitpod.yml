@@ -1,3 +1,9 @@
+image:
+  file: .gitpod.Dockerfile
+
+checkoutLocation: "go/src/github.com/templarfelix/go-aula"
+workspaceLocation: "go/src/github.com/templarfelix/go-aula"
+
 tasks:
   - init: go get 
     command: make start
