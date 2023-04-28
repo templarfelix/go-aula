@@ -1,11 +1,11 @@
-image:
-  file: .gitpod.Dockerfile
+#image:
+#  file: .gitpod.Dockerfile
 
 checkoutLocation: "go/src/github.com/templarfelix/go-aula"
-workspaceLocation: "go/src/github.com/templarfelix/go-aula"
+workspaceLocation: "."
 
 tasks:
-  - init: go get 
+  - init: go get -v ./...
     command: make start
 
 github:
