@@ -2,7 +2,7 @@
 #  file: .gitpod.Dockerfile
 
 checkoutLocation: "go/src/github.com/templarfelix/go-aula"
-workspaceLocation: "."
+workspaceLocation: "go/src/github.com/templarfelix/go-aula"
 
 tasks:
   - init: go get -v ./...
