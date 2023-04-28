@@ -5,6 +5,9 @@ GOCMD=go
 
 all: help
 
+start: ## start
+	$(GOCMD) run ./cmd/api/main.go
+
 update: ## update libs
 	$(GOCMD) get -u ./...
 

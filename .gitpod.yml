@@ -1,9 +1,16 @@
+#image:
+#  file: .gitpod.Dockerfile
+
+checkoutLocation: "go/src/github.com/templarfelix/go-aula"
+workspaceLocation: "go/src/github.com/templarfelix/go-aula"
+
 tasks:
-  - init: go get 
+  - init: go get -v ./...
+    command: make start
 
 github:
-    prebuilds:
-        pullRequestsFromForks: true
+  prebuilds:
+    pullRequestsFromForks: true
 
 ports:
   - port: 8080
@@ -15,6 +22,4 @@ vscode:
   extensions:
     - golang.go
     - DavidAnson.vscode-markdownlint
-    - mdickin.markdown-shortcuts
     - timonwong.shellcheck
-    - premparihar.gotestexplorer
