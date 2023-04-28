@@ -12,7 +12,8 @@
     "port": "26257",
     "user": "aula",
     "password": "aula@321",
-    "name": "aula"
+    "name": "aula",
+    "sslMode": "",
   }
 
 }

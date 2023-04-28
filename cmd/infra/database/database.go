@@ -15,12 +15,13 @@ import (
 func ProvideDatabase(logger *zap.SugaredLogger, config config.Config) *gorm.DB {
 
 	logger.Info("Executing ProvideHttpServer.")
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=verify-full",
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		config.Database.Host,
 		config.Database.Port,
 		config.Database.User,
 		config.Database.Name,
-		config.Database.Password)
+		config.Database.Password,
+		config.Database.SslMode)
 
 	loggerZapgorm2 := zapgorm2.New(logger.Desugar())
 	loggerZapgorm2.SetAsDefault()

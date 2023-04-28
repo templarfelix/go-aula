@@ -21,6 +21,7 @@ type Config struct {
 		User     string
 		Name     string
 		Password string
+		SslMode  string
 	}
 }
 
