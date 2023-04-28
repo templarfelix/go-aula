@@ -15,4 +15,5 @@
 # vendor/
 
 .idea
-cloud.config.yaml
+
+config/cloud/*.yaml

@@ -28,7 +28,11 @@ type Config struct {
 func ProvideConfig(logger *zap.SugaredLogger) Config {
 	logger.Info("Executing ProvideConfig.")
 	var Config Config
-	viper.SetConfigFile("localhost.config.yaml")
+	viper.SetConfigName("config.yaml")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config/cloud/")
+	viper.AddConfigPath("./config/local/")
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
