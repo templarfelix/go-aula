@@ -2,102 +2,82 @@ package category
 
 import (
 	"context"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/wait"
+	"database/sql"
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"microservice/cmd/infra/config"
-	"microservice/cmd/infra/database"
-	"microservice/cmd/infra/log"
 	"microservice/domain/entitie"
-	"reflect"
+	"regexp"
 	"testing"
+	"time"
 )
 
-func Test_categoryRepository_GetByID(t *testing.T) {
+type RepositorySuite struct {
+	suite.Suite
+	ctx        context.Context
+	conn       *sql.DB
+	DB         *gorm.DB
+	mock       sqlmock.Sqlmock
+	repository *categoryRepository
+	entitie    *entitie.Category
+}
 
-	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "postgres:latest",
-		ExposedPorts: []string{"5432/tcp"},
-		Env: map[string]string{
-			"POSTGRES_USER":     "aula",
-			"POSTGRES_PASSWORD": "aula",
-			"POSTGRES_DB":       "aula",
-		},
-		WaitingFor: wait.ForAll(
-			wait.ForLog("PostgreSQL init process complete; ready for start up."),
-			wait.ForListeningPort("5432/tcp"),
-		),
-	}
-	postgresC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
+func (rs *RepositorySuite) SetupSuite() {
+	var (
+		err error
+	)
+	rs.conn, rs.mock, err = sqlmock.New()
+	assert.NoError(rs.T(), err)
+	dialector := postgres.New(postgres.Config{
+		DSN:                  "sqlmock_db_0",
+		DriverName:           "postgres",
+		Conn:                 rs.conn,
+		PreferSimpleProtocol: true,
 	})
-	if err != nil {
-		t.Error(err)
+	rs.DB, err = gorm.Open(dialector, &gorm.Config{})
+	assert.NoError(rs.T(), err)
+
+	rs.repository = &categoryRepository{
+		DB: rs.DB,
 	}
-	defer func() {
-		if err := postgresC.Terminate(ctx); err != nil {
-			t.Fatalf("failed to terminate container: %s", err.Error())
-		}
-	}()
-
-	host, _ := postgresC.Host(ctx)
-	port, _ := postgresC.MappedPort(ctx, "5432")
-
-	db := database.ProvideDatabase(log.ProvideLogger(), config.Config{
-		Database: struct {
-			Host     string
-			Port     string
-			User     string
-			Name     string
-			Password string
-			SslMode  string
-		}{Host: host, Port: port.Port(), User: "aula", Name: "aula", Password: "aula", SslMode: "disable"},
-	})
-
-	db.AutoMigrate(&entitie.Category{})
-
-	type fields struct {
-		DB *gorm.DB
-	}
-	type args struct {
-		ctx context.Context
-		id  uint
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    entitie.Category
-		wantErr bool
-	}{
-		{
-			name: "test1",
-			fields: fields{
-				DB: db,
-			},
-			args: args{
-				id:  1,
-				ctx: ctx,
-			},
-			want:    entitie.Category{},
-			wantErr: true,
+	assert.IsType(rs.T(), &categoryRepository{}, rs.repository)
+	rs.entitie = &entitie.Category{
+		Name: "Test",
+		Model: gorm.Model{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := &categoryRepository{
-				DB: tt.fields.DB,
-			}
-			got, err := m.GetByID(tt.args.ctx, tt.args.id)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetByID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetByID() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
+	rs.ctx = context.Background()
+}
+
+func (rs *RepositorySuite) AfterTest(_, _ string) {
+	assert.NoError(rs.T(), rs.mock.ExpectationsWereMet())
+}
+
+func TestSuite(t *testing.T) {
+	suite.Run(t, new(RepositorySuite))
+}
+
+func (rs *RepositorySuite) TestE2ECategoryRepository_Store() {
+
+	rs.mock.ExpectBegin()
+	rs.mock.ExpectQuery(
+		regexp.QuoteMeta(`INSERT INTO "categories" ("name","created_at","updated_at","deleted_at") VALUES ($1,$2,$3,$4) RETURNING "id"`)).
+		WithArgs(
+			rs.entitie.Name,
+			sqlmock.AnyArg(),
+			sqlmock.AnyArg(),
+			sqlmock.AnyArg(),
+		).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+	rs.mock.ExpectCommit()
+
+	err := rs.repository.Store(rs.ctx, rs.entitie)
+
+	assert.NoError(rs.T(), err) // valida se houve algum erro
+
 }
