@@ -71,3 +71,19 @@ go generate ./...
         banana
     ## id_tag
         1   where deleted_at = false and ative = true
+
+
+## DEBUGS
+
+go tool pprof http://localhost:9090/debug/pprof/heap
+
+go tool pprof http://localhost:9090/debug/pprof/profile?seconds=30
+
+go tool pprof http://localhost:9090/debug/pprof/block
+
+
+go tool pprof http://localhost:9090/debug/pprof/mutex
+
+
+
+

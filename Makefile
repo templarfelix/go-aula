@@ -17,6 +17,13 @@ tidy: ## Downloads go dependencies
 fmt: tidy ## Run go fmt
 	go fmt ./...
 
+
+test: ## Run go fmt
+	go test ./...
+
+e2e: ## Run go fmt
+	go test ./... -tags e2e
+
 help: ## Display help screen
 	@echo "Usage:"
 	@echo "	make [COMMAND]"

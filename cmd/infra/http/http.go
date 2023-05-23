@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"github.com/labstack/echo-contrib/pprof"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -55,6 +56,9 @@ func RegisterMiddlewareHooks(
 				echoInstance.Use(middleware.RequestID())
 				p := prometheus.NewPrometheus("echo", nil)
 				p.Use(echoInstance)
+
+				pprof.Register(echoInstance)
+
 				echoInstance.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 					LogURI:    true,
 					LogStatus: true,
