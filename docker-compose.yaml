@@ -1,8 +1,6 @@
-version: '3.1'
-
 services:
   crdb:
-    image: cockroachdb/cockroach:latest
+    image: cockroachdb/cockroach:v24.3.5
     ports:
       - "26257:26257"
       - "8080:8080"
@@ -11,11 +9,17 @@ services:
       COCKROACH_DATABASE: "aula"
       COCKROACH_USER: "aula"
       COCKROACH_PASSWORD: "aula@321"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   flyway:
-    image: flyway/flyway
+    image: flyway/flyway:11.3.4
     command: -configFiles=/flyway/conf/flyway.config -locations=filesystem:/flyway/sql -connectRetries=60 migrate
     volumes:
       - ./scripts/flyway/sql:/flyway/sql
       - ./scripts/flyway/conf/flyway.config:/flyway/conf/flyway.config
     depends_on:
-      - crdb
+      crdb:
+        condition: service_healthy
