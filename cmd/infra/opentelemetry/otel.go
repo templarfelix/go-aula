@@ -8,7 +8,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -51,7 +50,7 @@ func ProvideMeterProvider(logger *zap.SugaredLogger) *metric.MeterProvider {
 		metric.WithResource(res),
 		metric.WithReader(reader),
 	)
-	global.SetMeterProvider(provider)
+	otel.SetMeterProvider(provider)
 	return provider
 }
 
