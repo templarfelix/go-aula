@@ -8,7 +8,7 @@ This is a Go microservice demonstrating clean architecture patterns for a produc
 
 ## Tech Stack
 
-- **Language**: Go 1.20
+- **Language**: Go 1.25
 - **HTTP Framework**: Echo v4
 - **Dependency Injection**: Uber fx
 - **Database**: CockroachDB (PostgreSQL-compatible)
@@ -72,6 +72,11 @@ The server runs on `:9090` by default.
 
 ### Tag
 - Similar CRUD endpoints at `/tag`
+
+### Health
+- `GET /health` - Health check with database status
+- `GET /ready` - Readiness probe
+- `GET /live` - Liveness probe
 
 ## Development Setup
 
