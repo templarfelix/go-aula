@@ -2,18 +2,19 @@ package log
 
 import (
 	"context"
+
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
-func ProvideLogger() *zap.SugaredLogger {
+func ProvideLogger() (*zap.SugaredLogger, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	slogger := logger.Sugar()
 	slogger.Info("Executing ProvideLogger.")
-	return slogger
+	return slogger, nil
 }
 
 func RegisterHooks(
@@ -26,8 +27,7 @@ func RegisterHooks(
 				return nil
 			},
 			OnStop: func(context.Context) error {
-				//return logger.Desugar().Sync()
-				return nil
+				return logger.Sync()
 			},
 		},
 	)

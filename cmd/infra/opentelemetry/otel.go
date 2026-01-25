@@ -2,6 +2,8 @@ package opentelemetry
 
 import (
 	"context"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
@@ -16,14 +18,14 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"microservice/cmd/infra/config"
-	"time"
 )
 
-func ProvideTracerProvider(logger *zap.SugaredLogger) *sdktrace.TracerProvider {
+func ProvideTracerProvider(logger *zap.SugaredLogger) (*sdktrace.TracerProvider, error) {
 	logger.Info("Executing ProvideTracerProvider.")
 	exporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
-		panic(err)
+		logger.Errorw("failed to create trace exporter", "error", err)
+		return nil, err
 	}
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
@@ -31,14 +33,15 @@ func ProvideTracerProvider(logger *zap.SugaredLogger) *sdktrace.TracerProvider {
 	)
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	return tp
+	return tp, nil
 }
 
-func ProvideMeterProvider(logger *zap.SugaredLogger) *metric.MeterProvider {
-	logger.Info("Executing ProvideTracerProvider.")
+func ProvideMeterProvider(logger *zap.SugaredLogger) (*metric.MeterProvider, error) {
+	logger.Info("Executing ProvideMeterProvider.")
 	metricsExporter, err := stdoutmetric.New()
 	if err != nil {
-		panic(err)
+		logger.Errorw("failed to create metrics exporter", "error", err)
+		return nil, err
 	}
 	res := resource.NewWithAttributes(
 		semconv.SchemaURL,
@@ -51,7 +54,7 @@ func ProvideMeterProvider(logger *zap.SugaredLogger) *metric.MeterProvider {
 		metric.WithReader(reader),
 	)
 	otel.SetMeterProvider(provider)
-	return provider
+	return provider, nil
 }
 
 func RegisterHooks(
@@ -66,24 +69,21 @@ func RegisterHooks(
 		fx.Hook{
 			OnStart: func(context.Context) error {
 				echoInstance.Use(otelecho.Middleware(config.App))
-				return nil
-			},
-			OnStop: func(ctx context.Context) error {
-				return tracer.Shutdown(context.Background())
-			},
-		},
-	)
-	lifecycle.Append(
-		fx.Hook{
-			OnStart: func(context.Context) error {
-				err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second))
-				if err != nil {
-					panic(err)
+				if err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second)); err != nil {
+					logger.Errorw("failed to start runtime instrumentation", "error", err)
+					return err
 				}
 				return nil
 			},
 			OnStop: func(ctx context.Context) error {
-				return meter.Shutdown(context.Background())
+				logger.Info("Shutting down OpenTelemetry providers...")
+				if err := tracer.Shutdown(ctx); err != nil {
+					logger.Errorw("failed to shutdown tracer provider", "error", err)
+				}
+				if err := meter.Shutdown(ctx); err != nil {
+					logger.Errorw("failed to shutdown meter provider", "error", err)
+				}
+				return nil
 			},
 		},
 	)
