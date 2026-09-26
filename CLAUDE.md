@@ -8,7 +8,7 @@ This is a Go microservice demonstrating clean architecture patterns for a produc
 
 ## Tech Stack
 
-- **Language**: Go 1.20
+- **Language**: Go 1.24
 - **HTTP Framework**: Echo v4
 - **Dependency Injection**: Uber fx
 - **Database**: CockroachDB (PostgreSQL-compatible)
